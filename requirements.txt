@@ -1,0 +1,20 @@
+# Core
+numpy>=1.26
+pandas>=2.0
+scipy>=1.11
+scikit-learn>=1.3
+matplotlib>=3.7
+
+# PyTorch — install the CUDA 12.1 build for RTX 4060
+# Run this instead of pip install torch:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+torch>=2.2.0
+
+# LLM — Llama-3.2-3B-Instruct
+transformers>=4.45.0      # must be >=4.45 for Llama-3.2 support
+accelerate>=0.27.0        # required for device_map="auto"
+huggingface_hub>=0.24.0   # model download and caching
+
+# 4-bit quantization — keeps Llama within RTX 4060's 8 GB VRAM
+# Windows CUDA is supported from bitsandbytes 0.41.3+
+bitsandbytes>=0.43.0

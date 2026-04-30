@@ -1,0 +1,134 @@
+{
+  "label": "restored_5feat_baseline",
+  "input_dim": 5,
+  "val": {
+    "minADE": 1.6125,
+    "minFDE": 3.5454,
+    "classification_report": "                     precision    recall  f1-score   support\n\n               Safe       0.96      0.45      0.61     14599\n         Sharp Turn       0.06      0.20      0.10      1243\n Oscillatory Motion       0.37      0.84      0.52      3521\n    High-Speed Risk       0.45      0.83      0.59       609\nNear-Collision Risk       0.01      0.06      0.02        18\n\n           accuracy                           0.52     19990\n          macro avg       0.37      0.47      0.37     19990\n       weighted avg       0.78      0.52      0.56     19990\n",
+    "per_class": {
+      "Safe": {
+        "precision": 0.96,
+        "recall": 0.45,
+        "f1": 0.61,
+        "support": 14599
+      },
+      "Sharp Turn": {
+        "precision": 0.06,
+        "recall": 0.2,
+        "f1": 0.1,
+        "support": 1243
+      },
+      "Oscillatory Motion": {
+        "precision": 0.37,
+        "recall": 0.84,
+        "f1": 0.52,
+        "support": 3521
+      },
+      "High-Speed Risk": {
+        "precision": 0.45,
+        "recall": 0.83,
+        "f1": 0.59,
+        "support": 609
+      },
+      "Near-Collision Risk": {
+        "precision": 0.01,
+        "recall": 0.06,
+        "f1": 0.02,
+        "support": 18
+      },
+      "macro avg": {
+        "precision": 0.37,
+        "recall": 0.47,
+        "f1": 0.37,
+        "support": 19990
+      },
+      "weighted avg": {
+        "precision": 0.78,
+        "recall": 0.52,
+        "f1": 0.56,
+        "support": 19990
+      }
+    },
+    "label_distribution": {
+      "Safe": 14599,
+      "Sharp Turn": 1243,
+      "Oscillatory Motion": 3521,
+      "High-Speed Risk": 609,
+      "Near-Collision Risk": 18
+    }
+  },
+  "test": {
+    "minADE": 1.6165,
+    "minFDE": 3.5854,
+    "classification_report": "                     precision    recall  f1-score   support\n\n               Safe       0.96      0.45      0.61      3669\n         Sharp Turn       0.07      0.23      0.10       300\n Oscillatory Motion       0.37      0.81      0.51       879\n    High-Speed Risk       0.39      0.81      0.53       144\nNear-Collision Risk       0.00      0.00      0.00         6\n\n           accuracy                           0.51      4998\n          macro avg       0.36      0.46      0.35      4998\n       weighted avg       0.78      0.51      0.56      4998\n",
+    "per_class": {
+      "Safe": {
+        "precision": 0.96,
+        "recall": 0.45,
+        "f1": 0.61,
+        "support": 3669
+      },
+      "Sharp Turn": {
+        "precision": 0.07,
+        "recall": 0.23,
+        "f1": 0.1,
+        "support": 300
+      },
+      "Oscillatory Motion": {
+        "precision": 0.37,
+        "recall": 0.81,
+        "f1": 0.51,
+        "support": 879
+      },
+      "High-Speed Risk": {
+        "precision": 0.39,
+        "recall": 0.81,
+        "f1": 0.53,
+        "support": 144
+      },
+      "Near-Collision Risk": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6
+      },
+      "macro avg": {
+        "precision": 0.36,
+        "recall": 0.46,
+        "f1": 0.35,
+        "support": 4998
+      },
+      "weighted avg": {
+        "precision": 0.78,
+        "recall": 0.51,
+        "f1": 0.56,
+        "support": 4998
+      }
+    },
+    "label_distribution": {
+      "Safe": 3669,
+      "Sharp Turn": 300,
+      "Oscillatory Motion": 879,
+      "High-Speed Risk": 144,
+      "Near-Collision Risk": 6
+    }
+  },
+  "config": {
+    "BATCH_SIZE": 256,
+    "DIM_FEEDFORWARD": 256,
+    "DROPOUT": 0.1,
+    "D_MODEL": 128,
+    "EARLY_STOP_PATIENCE": 15,
+    "LEARNING_RATE": 0.0005,
+    "LR_FACTOR": 0.5,
+    "LR_PATIENCE": 5,
+    "MIN_LR": 1e-05,
+    "NHEAD": 4,
+    "NUM_EPOCHS": 75,
+    "NUM_LAYERS": 3,
+    "NUM_MODES": 6,
+    "OBS_LEN": 50,
+    "PRED_LEN": 60,
+    "SEED": 42
+  }
+}

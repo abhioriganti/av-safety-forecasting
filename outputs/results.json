@@ -1,0 +1,8 @@
+{
+  "best_val_minADE": 2.1968069076538086,
+  "final_val_minFDE": 4.330696105957031,
+  "test_minADE": 2.1956498622894287,
+  "test_minFDE": 4.572451114654541,
+  "val_safety_report": "                     precision    recall  f1-score   support\n\n               Safe       0.98      0.01      0.01     14599\n         Sharp Turn       0.02      0.03      0.02      1243\n Oscillatory Motion       0.26      0.53      0.34      3521\n    High-Speed Risk       0.10      0.79      0.17       609\nNear-Collision Risk       0.00      0.17      0.00        18\n\n           accuracy                           0.12     19990\n          macro avg       0.27      0.30      0.11     19990\n       weighted avg       0.76      0.12      0.08     19990\n",
+  "test_safety_report": "                     precision    recall  f1-score   support\n\n               Safe       1.00      0.00      0.01      3669\n         Sharp Turn       0.02      0.02      0.02       300\n Oscillatory Motion       0.24      0.49      0.32       879\n    High-Speed Risk       0.09      0.82      0.17       144\nNear-Collision Risk       0.00      0.67      0.01         6\n\n           accuracy                           0.11      4998\n          macro avg       0.27      0.40      0.10      4998\n       weighted avg       0.78      0.11      0.07      4998\n"
+}

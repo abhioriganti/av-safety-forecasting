@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environments
+.env
+.venv
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data - raw and preprocessed splits are too large for git
+data/
+
+# Normalization stats are small and needed for inference - tracked
+# outputs/X_mean.npy etc. are intentionally NOT excluded
+
+# Model checkpoints - tracked (each ~2-12 MB)
+# outputs/checkpoints/ is intentionally NOT excluded
+
+# Timestamped experiment runs - use outputs/final_eval/ instead
+outputs/experiments/
+
+# Training logs and intermediate artifacts
+outputs/*.log
+outputs/train_history.json
+outputs/demo_reports.json
+outputs/preprocess_*.log
+outputs/train_*.log
+outputs/experiment_*.log
+outputs/drift_*.log
+
+# Generated reports (binary)
+outputs/reports/
+
+# OS
+.DS_Store
+Thumbs.db
