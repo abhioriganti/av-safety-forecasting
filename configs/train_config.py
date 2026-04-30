@@ -7,10 +7,10 @@ Import in train.py, refit_safety.py, and any experiment script.
 SEED = 42
 
 # ── model architecture ────────────────────────────────────────────────────────
-D_MODEL        = 128
+D_MODEL        = 256
 NHEAD          = 4
-NUM_LAYERS     = 3
-DIM_FEEDFORWARD = 256
+NUM_LAYERS     = 4
+DIM_FEEDFORWARD = 512
 DROPOUT        = 0.1
 NUM_MODES      = 6
 

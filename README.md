@@ -21,26 +21,26 @@ A Random Forest trained on 18 hand-crafted kinematic features extracted from the
 ### TrajectoryTransformer
 
 ```
-Input:  [batch, 50, 5]   (x, y, vx, vy, heading per timestep)
+Input:  [batch, 50, 6]   (dx, dy, vx, vy, sin_heading, cos_heading per timestep)
          |
-  Linear projection     input_dim -> d_model (128)
+  Linear projection     input_dim -> d_model (256)
          |
   Sinusoidal positional encoding
          |
   TransformerEncoder
-    3 layers
-    d_model = 128
+    4 layers
+    d_model = 256
     nhead   = 4
-    FFN dim = 256
+    FFN dim = 512
     dropout = 0.1
          |
-  Mean-pool across 50 timesteps  -> [batch, 128]
+  Mean-pool across 50 timesteps  -> [batch, 256]
          |
        /       \
   Mode head    Confidence head
-  Linear(128, 128)   Linear(128, 6)
+  Linear(256, 256)   Linear(256, 6)
   ReLU
-  Linear(128, 6 x 60 x 2)
+  Linear(256, 6 x 60 x 2)
        |                |
   [batch, 6, 60, 2]  [batch, 6]
   (6 candidate         (mode
@@ -49,8 +49,10 @@ Input:  [batch, 50, 5]   (x, y, vx, vy, heading per timestep)
 
 **Key design choices:**
 
+- **Relative displacement encoding** Input features use per-step (dx, dy) displacements rather than absolute positions, making the representation translation-invariant. Sin/cos heading replaces raw heading angle to remove the +/-pi discontinuity.
 - **Mean pooling** over all 50 encoder hidden states (not just the last token) preserves the full temporal context of the observed history.
 - **Multimodal output (K=6)** predicts a distribution over plausible futures. Training uses Winner-Takes-All (WTA) loss: only the mode closest to the ground-truth receives gradient, encouraging mode diversity.
+- **Huber loss (delta=1.0)** replaces MSE in the WTA objective, reducing sensitivity to isolated outlier timesteps and lowering predicted-trajectory jerk.
 - **Confidence head** learns to rank modes without oracle knowledge at inference. Mode selection uses `confs.argmax()`, not `mode_ade.argmin()`.
 - **Attention extraction** A separate `MultiheadAttention` layer on the encoder output provides interpretable attention maps showing which past timesteps drove the prediction.
 
@@ -90,19 +92,19 @@ Evaluated on a held-out test split (4,998 scenarios from Argoverse 2 val).
 
 | Metric | Value |
 |--------|-------|
-| minADE (m) | 1.61 |
-| minFDE (m) | 3.55 |
+| minADE (m) | 1.44 |
+| minFDE (m) | 3.28 |
 
 ### Safety Classification (test split)
 
 | Class | Precision | Recall | F1 | Support |
 |-------|:---------:|:------:|:--:|:-------:|
-| Safe | 0.96 | 0.45 | 0.61 | 3,669 |
-| Sharp Turn | 0.07 | 0.23 | 0.10 | 300 |
-| Oscillatory Motion | 0.37 | 0.81 | 0.51 | 879 |
-| High-Speed Risk | 0.39 | 0.81 | 0.53 | 144 |
-| Near-Collision Risk | 0.00 | 0.00 | 0.00 | 6 |
-| **Macro avg** | **0.36** | **0.46** | **0.35** | **4,998** |
+| Safe | 0.95 | 0.48 | 0.64 | 3,669 |
+| Sharp Turn | 0.05 | 0.19 | 0.09 | 300 |
+| Oscillatory Motion | 0.38 | 0.81 | 0.52 | 879 |
+| High-Speed Risk | 0.48 | 0.62 | 0.54 | 144 |
+| Near-Collision Risk | 0.07 | 0.17 | 0.10 | 6 |
+| **Macro avg** | **0.39** | **0.46** | **0.38** | **4,998** |
 
 Confusion matrices, PR curves, calibration plots, and feature importance charts are in `outputs/final_eval/` and `outputs/safety_eval/`.
 
@@ -116,7 +118,7 @@ av-safety-forecasting/
     train_config.py          # Transformer hyperparameters and training settings
     safety_config.py         # Safety classifier thresholds and RF settings
   src/
-    preprocess_full.py       # Argoverse 2 preprocessing -> [N, 50, 5] arrays
+    preprocess_full.py       # Argoverse 2 preprocessing -> [N, 50, 6] arrays
     model.py                 # TrajectoryTransformer architecture
     train.py                 # Training loop: WTA loss, AMP, early stopping
     safety.py                # 18-feature extraction + SafetyClassifier
@@ -179,7 +181,7 @@ python src/preprocess_full.py \
   --val_dir   "path/to/val/val"
 ```
 
-Output: `data/processed/` with `X_train.npy` [199908, 50, 5], `Y_train.npy` [199908, 60, 2], and corresponding val/test splits.
+Output: `data/processed/` with `X_train.npy` [199908, 50, 6], `Y_train.npy` [199908, 60, 2], and corresponding val/test splits.
 
 ---
 
@@ -226,13 +228,10 @@ Runs the full pipeline on a random val scenario and prints the predicted traject
 **B4 - Autoregressive GRU decoder**
 Replace the current mean-pool + linear head with a GRU that unrolls step by step. Each predicted position feeds back into the next step, producing physically consistent rollouts and eliminating the step-to-step oscillations that are the primary source of false unsafe-event predictions.
 
-**B5 - Smooth L1 (Huber) loss**
-The current MSE-based WTA loss penalizes all prediction errors equally, allowing the model to produce isolated spike steps with large displacement. Huber loss reduces sensitivity to individual outlier timesteps and should lower the jerk/acceleration drift scores identified in the feature distribution analysis.
-
-**B6 - Vectorized map and social context**
+**B5 - Vectorized map and social context**
 The current model uses only the ego agent's kinematic history. Encoding nearby lane centerlines and other agents' motion (e.g., via a vectorized map encoder or transformer cross-attention over neighbors) would give the model the spatial context it needs to predict lane-following and interaction-aware behavior.
 
-**B7 - Scene-conditioned multimodality**
+**B6 - Scene-conditioned multimodality**
 The K=6 modes currently differ only in output space. Adding a learned anchor system (clustering training trajectories into K prototype futures) would encourage each mode to represent a genuinely distinct maneuver rather than small perturbations of the same trajectory.
 
 ### Safety Classification

@@ -84,7 +84,7 @@ def wta_loss(preds_k: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
     B, K, T, C = preds_k.shape
     idx       = best_mode.view(B, 1, 1, 1).expand(B, 1, T, C)
     best_pred = preds_k.gather(1, idx).squeeze(1)
-    return nn.functional.mse_loss(best_pred, gt)
+    return nn.functional.huber_loss(best_pred, gt, delta=1.0)
 
 
 # ── attention visualisation ───────────────────────────────────────────────────

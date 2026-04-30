@@ -19,13 +19,17 @@ Custom paths:
         --val_dir   "C:/Users/abhis/Downloads/val/val" \
         --out_dir   data/processed
 
-Output files (same schema as preprocess_val_split.py):
-    data/processed/X_train.npy   [N_train, 50, 5]
+Output files:
+    data/processed/X_train.npy   [N_train, 50, 6]
     data/processed/Y_train.npy   [N_train, 60, 2]
-    data/processed/X_val.npy     [N_val,   50, 5]
+    data/processed/X_val.npy     [N_val,   50, 6]
     data/processed/Y_val.npy     [N_val,   60, 2]
-    data/processed/X_test.npy    [N_test,  50, 5]
+    data/processed/X_test.npy    [N_test,  50, 6]
     data/processed/Y_test.npy    [N_test,  60, 2]
+
+Features (6): dx, dy, vx, vy, sin_heading, cos_heading
+  dx/dy: per-step displacement (translation-invariant, dx_0 = dy_0 = 0)
+  sin/cos heading: avoids the +/-pi discontinuity of raw heading angles
 """
 
 import argparse
@@ -67,14 +71,22 @@ def extract_focal_agent(parquet_path: str):
     vy      = focal["velocity_y"].values.astype(np.float32)
     heading = focal["heading"].values.astype(np.float32)
 
-    obs  = np.stack([x[:OBS_LEN], y[:OBS_LEN], vx[:OBS_LEN], vy[:OBS_LEN],
-                     heading[:OBS_LEN]], axis=1)
+    # Relative displacement: translation-invariant motion encoding
+    dx = np.diff(x, prepend=x[0]).astype(np.float32)   # dx_0 = 0
+    dy = np.diff(y, prepend=y[0]).astype(np.float32)
+
+    # Sin/cos heading: removes +/-pi discontinuity
+    sin_h = np.sin(heading).astype(np.float32)
+    cos_h = np.cos(heading).astype(np.float32)
+
+    obs  = np.stack([dx[:OBS_LEN], dy[:OBS_LEN], vx[:OBS_LEN], vy[:OBS_LEN],
+                     sin_h[:OBS_LEN], cos_h[:OBS_LEN]], axis=1)
     pred = np.stack([x[OBS_LEN:], y[OBS_LEN:]], axis=1)
     return obs, pred
 
 
 def load_split(split_dir: str, split_name: str, max_scenarios: int = None):
-    """Load all usable scenarios from a directory. Returns X [N,50,5], Y [N,60,2]."""
+    """Load all usable scenarios from a directory. Returns X [N,50,6], Y [N,60,2]."""
     split_path = Path(split_dir)
     scenario_dirs = sorted([d for d in split_path.iterdir() if d.is_dir()])
 
