@@ -219,6 +219,43 @@ Runs the full pipeline on a random val scenario and prints the predicted traject
 
 ---
 
+## Future Developments
+
+### Trajectory Forecasting
+
+**B4 - Autoregressive GRU decoder**
+Replace the current mean-pool + linear head with a GRU that unrolls step by step. Each predicted position feeds back into the next step, producing physically consistent rollouts and eliminating the step-to-step oscillations that are the primary source of false unsafe-event predictions.
+
+**B5 - Smooth L1 (Huber) loss**
+The current MSE-based WTA loss penalizes all prediction errors equally, allowing the model to produce isolated spike steps with large displacement. Huber loss reduces sensitivity to individual outlier timesteps and should lower the jerk/acceleration drift scores identified in the feature distribution analysis.
+
+**B6 - Vectorized map and social context**
+The current model uses only the ego agent's kinematic history. Encoding nearby lane centerlines and other agents' motion (e.g., via a vectorized map encoder or transformer cross-attention over neighbors) would give the model the spatial context it needs to predict lane-following and interaction-aware behavior.
+
+**B7 - Scene-conditioned multimodality**
+The K=6 modes currently differ only in output space. Adding a learned anchor system (clustering training trajectories into K prototype futures) would encourage each mode to represent a genuinely distinct maneuver rather than small perturbations of the same trajectory.
+
+### Safety Classification
+
+**C1 - Classifier calibration**
+Precision is consistently high but recall on Safe is low (0.45), meaning the classifier over-fires on unsafe classes. Applying isotonic regression or Platt scaling after training should align predicted probabilities with true outcome frequencies.
+
+**C2 - Rare-class augmentation**
+Near-Collision has only 6 test samples and F1 = 0.00. Synthetic augmentation by perturbing GT near-collision trajectories, or SMOTE on the 18-feature vectors, would give the classifier meaningful signal for this critical class.
+
+**C3 - Uncertainty-aware labeling**
+The current weak-supervision rules assign hard labels. Replacing them with soft label distributions (e.g., label = 0.7 Oscillatory + 0.3 Safe near the threshold boundary) would reduce noise in the training signal for the Random Forest.
+
+### System-Level
+
+**LLM safety diagnosis**
+`src/retrieval.py` contains a retrieval module that matches predicted scenarios against a library of annotated cases. Connecting this to a locally hosted Llama-3.2-3B-Instruct model would allow the system to generate natural-language explanations of detected safety events, making predictions interpretable for downstream operators.
+
+**Real-time inference pipeline**
+The current pipeline processes scenarios in batch. Refactoring to a streaming design with a fixed 100 ms budget per forward pass would make the system suitable for deployment in a live AV stack.
+
+---
+
 ## Citation
 
 Wilson et al., "Argoverse 2: Next Generation Acceleration of Research in Forecasting," NeurIPS 2021 Datasets and Benchmarks Track.
