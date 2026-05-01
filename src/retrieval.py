@@ -197,6 +197,9 @@ class LLMReportGenerator:
 
         try:
             clean = raw.replace("```json", "").replace("```", "").strip()
+            # repair truncated output: LLM sometimes stops before the closing }
+            if clean.startswith("{") and not clean.endswith("}"):
+                clean = clean.rstrip(",\n ") + "\n}"
             return json.loads(clean)
         except json.JSONDecodeError:
             print(f"[LLMReportGenerator] JSON parse failed — template fallback.")

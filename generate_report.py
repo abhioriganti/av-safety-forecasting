@@ -132,7 +132,7 @@ def build_word(out_path):
 
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r2 = sub.add_run("Team Status Report  |  DATA612 Deep Learning  |  April 29, 2026")
+    r2 = sub.add_run("Team Status Report  |  DATA612 Deep Learning  |  April 30, 2026")
     r2.font.size = Pt(11)
     r2.font.color.rgb = RGBColor.from_string("595959")
 
@@ -180,10 +180,12 @@ def build_word(out_path):
 
     add_heading(doc, "1.2  Transformer Model — Training on Full Dataset", level=2)
     doc.add_paragraph(
-        "The TrajectoryTransformer (d_model=128, 3 encoder layers, 4 attention heads, K=6 modes) "
-        "was trained for 75 epochs on the RTX 4060 Laptop GPU using AMP and Winner-Takes-All loss. "
+        "The TrajectoryTransformer (d_model=256, 4 encoder layers, 4 attention heads, K=6 modes) "
+        "was trained for 75 epochs on the RTX 4060 Laptop GPU using AMP and Winner-Takes-All loss "
+        "with Huber loss (delta=1.0). Input features upgraded from 5 to 6: relative displacement "
+        "(dx, dy), velocity (vx, vy), and sin/cos heading for translation invariance. "
         "ReduceLROnPlateau scheduler with early stopping (patience=15). "
-        "Total training time: 38.2 minutes. Best checkpoint saved at epoch 75."
+        "Total training time: 93.4 minutes. Best checkpoint saved at epoch 75."
     )
     add_table(doc,
         ["Metric", "Val Set", "Test Set"],
@@ -193,9 +195,10 @@ def build_word(out_path):
         ]
     )
     doc.add_paragraph()
-    add_callout(doc, "38% improvement over validation-set-only baseline:",
+    add_callout(doc, "45% improvement over validation-set-only baseline:",
         f"Previous run (17K training samples) achieved minADE=2.62 m. "
-        f"Full dataset (200K samples) achieves minADE={TEST_ADE}, a 38% reduction in prediction error.",
+        f"Improved model (200K samples, 6-feat, d_model=256, Huber loss) achieves minADE={TEST_ADE}, "
+        f"a 45% reduction in prediction error. Improvement vs 5-feat 200K baseline: -10.4%.",
         bg="E2EFDA")
 
     add_heading(doc, "1.3  Safety Event Classifier — RandomForest on 200K Trajectories", level=2)
@@ -221,12 +224,12 @@ def build_word(out_path):
     add_table(doc,
         ["Class", "Precision", "Recall", "F1"],
         [
-            ["Safe",               "0.99", "0.29", "0.45"],
-            ["Sharp Turn",         "0.03", "0.08", "0.04"],
-            ["Oscillatory Motion", "0.35", "0.96", "0.51"],
-            ["High-Speed Risk",    "0.26", "0.94", "0.41"],
-            ["Near-Collision Risk","0.03", "0.33", "0.06"],
-            ["Macro avg",          "0.33", "0.52", "0.29"],
+            ["Safe",               "0.95", "0.48", "0.64"],
+            ["Sharp Turn",         "0.05", "0.19", "0.09"],
+            ["Oscillatory Motion", "0.38", "0.81", "0.52"],
+            ["High-Speed Risk",    "0.48", "0.62", "0.54"],
+            ["Near-Collision Risk","0.07", "0.17", "0.10"],
+            ["Macro avg",          "0.39", "0.46", "0.38"],
         ]
     )
     doc.add_paragraph()
@@ -346,11 +349,11 @@ def build_word(out_path):
         [
             ["Trajectory Model", "Test minADE",     TEST_ADE],
             ["Trajectory Model", "Test minFDE",     TEST_FDE],
-            ["Trajectory Model", "Training time",   "38.2 min (75 epochs)"],
+            ["Trajectory Model", "Training time",   "93.4 min (75 epochs)"],
             ["Trajectory Model", "Training samples","199,908"],
-            ["Safety Classifier","Safe precision",  "0.99"],
-            ["Safety Classifier","Oscillatory F1",  "0.51"],
-            ["Safety Classifier","High-Speed Recall","0.94"],
+            ["Safety Classifier","Safe F1",         "0.64"],
+            ["Safety Classifier","Oscillatory F1",  "0.52"],
+            ["Safety Classifier","High-Speed F1",   "0.54"],
             ["LLM Reports",      "Classes detected", "3 of 5 in 5-sample demo"],
             ["LLM Reports",      "VRAM usage",       "~1.7 GB (4-bit NF4)"],
         ]
@@ -385,14 +388,15 @@ def build_word(out_path):
         "18-feature safety classifier (10 → 18 features; turning_direction_changes = #1 importance at 0.161)",
         "Phase 2 experiment: confirmed model smoothness is root cause of Sharp Turn mis-classification",
         "Negative result documented: train-on-predictions collapsed evaluation to 99% Safe (macro F1=0.22)",
+        "Improved model: 6-feat encoding + d_model=256 + Huber loss — minADE 1.61→1.44 (-10.4%), macro-F1 0.35→0.38",
     ]:
         p = doc.add_paragraph(style="List Bullet")
         p.add_run(step).font.size = Pt(11)
     doc.add_paragraph()
     add_heading(doc, "Still Needed:", level=2)
     for i, step in enumerate([
-        "Write final paper: Results and Discussion with full-dataset metrics and Phase 1 findings",
-        "Phase 3: Sharper trajectory decoder or map-aware model to produce realistic (non-smooth) predictions",
+        "Write final paper: Results and Discussion with full-dataset metrics and Phase 1+2 findings",
+        "Map-aware trajectory model: encode HD map lane polylines via cross-attention (target: minADE ~0.95-1.10m)",
         "Ablation study: compare Llama-generated vs template-fallback safety reports",
         "Add trajectory visualization figures for the paper",
         "Prepare final presentation slides",
@@ -474,7 +478,7 @@ def build_pdf(out_path):
     story.append(Paragraph("AV Safety Forecasting Pipeline",
         ParagraphStyle("T", parent=styles["Title"], fontSize=22, textColor=DARK_BLUE, alignment=TA_CENTER)))
     story.append(Paragraph(
-        "Team Status Report &nbsp;|&nbsp; DATA612 Deep Learning &nbsp;|&nbsp; April 29, 2026",
+        "Team Status Report &nbsp;|&nbsp; DATA612 Deep Learning &nbsp;|&nbsp; April 30, 2026",
         ParagraphStyle("S", parent=styles["Normal"], fontSize=11, alignment=TA_CENTER,
                        textColor=colors.HexColor("#595959"), spaceAfter=4)))
     story.append(Paragraph("Prepared by: Abhishek Rithik Origanti",
@@ -515,9 +519,11 @@ def build_pdf(out_path):
 
     story.append(Paragraph("1.2  Transformer Model — Full Dataset Training", h2))
     story.append(Paragraph(
-        "TrajectoryTransformer (d_model=128, 3 encoder layers, 4 heads, K=6 modes) trained for "
+        "TrajectoryTransformer (d_model=256, 4 encoder layers, 4 heads, K=6 modes) trained for "
         "75 epochs with ReduceLROnPlateau scheduler and early stopping (patience=15). "
-        "Training time: 38.2 minutes on RTX 4060 Laptop GPU. Best checkpoint at epoch 75.", body))
+        "Input upgraded to 6 features: relative displacement (dx, dy), velocity (vx, vy), "
+        "sin/cos heading. Huber loss (delta=1.0) replaces MSE in WTA objective. "
+        "Training time: 93.4 minutes on RTX 4060 Laptop GPU. Best checkpoint at epoch 75.", body))
     story.append(tbl(
         [["Metric", "Val Set", "Test Set"],
          ["minADE", VAL_ADE, TEST_ADE],
@@ -526,8 +532,9 @@ def build_pdf(out_path):
     ))
     story.append(Spacer(1, 0.2*cm))
     story.append(box(
-        f"<b>38% improvement over baseline:</b> Validation-set-only training (17K samples) "
-        f"achieved minADE=2.62 m. Full dataset (200K samples) achieves minADE={TEST_ADE}.",
+        f"<b>45% improvement over baseline:</b> Validation-set-only training (17K samples) "
+        f"achieved minADE=2.62 m. Improved model (200K samples, 6-feat, d_model=256, Huber loss) "
+        f"achieves minADE={TEST_ADE} — 45% reduction vs prototype, 10.4% vs 5-feat 200K baseline.",
         bg=GREEN_BG, border_col=colors.HexColor("#70AD47")
     ))
     story.append(Spacer(1, 0.3*cm))
@@ -550,12 +557,12 @@ def build_pdf(out_path):
     story.append(Paragraph("Classification results (test set):", body))
     story.append(tbl(
         [["Class", "Precision", "Recall", "F1"],
-         ["Safe",               "0.99", "0.29", "0.45"],
-         ["Sharp Turn",         "0.03", "0.08", "0.04"],
-         ["Oscillatory Motion", "0.35", "0.96", "0.51"],
-         ["High-Speed Risk",    "0.26", "0.94", "0.41"],
-         ["Near-Collision Risk","0.03", "0.33", "0.06"],
-         ["Macro avg",          "0.33", "0.52", "0.29"]],
+         ["Safe",               "0.95", "0.48", "0.64"],
+         ["Sharp Turn",         "0.05", "0.19", "0.09"],
+         ["Oscillatory Motion", "0.38", "0.81", "0.52"],
+         ["High-Speed Risk",    "0.48", "0.62", "0.54"],
+         ["Near-Collision Risk","0.07", "0.17", "0.10"],
+         ["Macro avg",          "0.39", "0.46", "0.38"]],
         [6*cm, 3*cm, 3*cm, 4*cm]
     ))
     story.append(Spacer(1, 0.2*cm))
@@ -657,11 +664,11 @@ def build_pdf(out_path):
         [["Component", "Metric", "Result"],
          ["Trajectory Model",  "Test minADE",          TEST_ADE],
          ["Trajectory Model",  "Test minFDE",          TEST_FDE],
-         ["Trajectory Model",  "Training time",        "38.2 min (75 epochs, 200K samples)"],
-         ["Trajectory Model",  "Improvement vs baseline", "38% better minADE"],
-         ["Safety Classifier", "Safe precision",       "0.99"],
-         ["Safety Classifier", "Oscillatory F1",       "0.51"],
-         ["Safety Classifier", "High-Speed Recall",    "0.94"],
+         ["Trajectory Model",  "Training time",        "93.4 min (75 epochs, 200K samples)"],
+         ["Trajectory Model",  "Improvement vs baseline", "45% better vs prototype; 10.4% vs 5-feat"],
+         ["Safety Classifier", "Safe F1",              "0.64"],
+         ["Safety Classifier", "Oscillatory F1",       "0.52"],
+         ["Safety Classifier", "High-Speed F1",        "0.54"],
          ["LLM Reports",       "Classes in demo",      "3 of 5 (Safe, Sharp Turn, Oscillatory)"],
          ["LLM Reports",       "VRAM (4-bit NF4)",     "~1.7 GB / 8.6 GB available"]],
         [5*cm, 5*cm, 6*cm]
@@ -691,19 +698,20 @@ def build_pdf(out_path):
     # S5
     story.append(Paragraph("5.  Remaining Work for Final Submission", h1))
     story.append(HRFlowable(width="100%", thickness=1, color=LIGHT_BLUE, spaceAfter=6))
-    story.append(Paragraph("<b>Completed (Phase 1 + 2):</b>", body))
+    story.append(Paragraph("<b>Completed (Phase 1 + 2 + Improved Model):</b>", body))
     for s in [
         "Comprehensive safety evaluation script: confusion matrix, PR curves, calibration, feature importance",
         "18-feature safety classifier — turning_direction_changes is #1 most important feature (0.161)",
         "Phase 2 experiment: confirmed model smoothness is root cause of Sharp Turn mis-classification",
         "Negative result documented: train-on-predictions collapsed evaluation to 99% Safe (macro F1=0.22)",
+        "Improved model: 6-feat encoding + d_model=256 + Huber loss — minADE 1.61→1.44 (-10.4%), macro-F1 0.35→0.38",
     ]:
         story.append(Paragraph(f"&#10003;  {s}", body))
     story.append(Spacer(1, 0.2*cm))
     story.append(Paragraph("<b>Still Needed:</b>", body))
     for i, s in enumerate([
-        "Write final paper: Results and Discussion with full-dataset metrics and Phase 1 findings",
-        "Phase 3: Sharper decoder or map-aware trajectory model to produce realistic non-smooth predictions",
+        "Write final paper: Results and Discussion with full-dataset metrics and Phase 1+2 findings",
+        "Map-aware trajectory model: encode HD map lane polylines via cross-attention (target: minADE ~0.95-1.10m)",
         "Ablation study: compare Llama-generated vs template-fallback reports",
         "Add trajectory visualization figures for the paper",
         "Prepare final presentation slides",

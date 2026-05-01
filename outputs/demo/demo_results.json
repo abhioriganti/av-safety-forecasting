@@ -1,0 +1,226 @@
+{
+  "data_slice": {
+    "N_train": 5000,
+    "N_val": 1000,
+    "N_test": 500
+  },
+  "epochs_trained": 10,
+  "best_val_minADE": 4.8138,
+  "test_minADE": 4.8429,
+  "test_minFDE": 7.5085,
+  "training_time_min": 0.2,
+  "demo_reports": [
+    {
+      "sample": 0,
+      "predicted_event": "Sharp Turn",
+      "gt_event": "Safe",
+      "features": {
+        "max_speed": 0.5863,
+        "mean_speed": 0.2774,
+        "max_heading_change": 3.1619,
+        "mean_heading_change": 0.468,
+        "heading_variance": 0.4597,
+        "max_lateral_dev": 0.2389,
+        "mean_lateral_dev": 0.1059,
+        "total_distance": 16.3678,
+        "final_displacement": 15.8409,
+        "oscillation_score": 0.6931,
+        "max_acceleration": 0.196,
+        "max_deceleration": 0.3042,
+        "max_jerk": 0.3982,
+        "turning_direction_changes": 0.6667,
+        "lateral_accel_max": 0.1151,
+        "path_efficiency": 0.9678,
+        "speed_at_end": 0.0626,
+        "mean_curvature": 6.3078
+      },
+      "class_probs": [
+        0.006666666666666667,
+        0.91,
+        0.08333333333333333,
+        0.0,
+        0.0
+      ],
+      "report": {
+        "event_type": "Sharp Turn",
+        "severity": "Medium",
+        "primary_indicator": "max_heading_change > 0.8",
+        "secondary_indicators": [
+          "max_heading_change = 3.1619 rad",
+          "max_lateral_dev = 0.2389 m"
+        ],
+        "recommended_action": "Monitor the vehicle's heading and adjust as necessary to maintain control during the turn",
+        "confidence": "Medium"
+      }
+    },
+    {
+      "sample": 1,
+      "predicted_event": "High-Speed Risk",
+      "gt_event": "Safe",
+      "features": {
+        "max_speed": 1.8008,
+        "mean_speed": 1.4311,
+        "max_heading_change": 0.7996,
+        "mean_heading_change": 0.1332,
+        "heading_variance": 0.0187,
+        "max_lateral_dev": 0.4547,
+        "mean_lateral_dev": 0.2189,
+        "total_distance": 84.4338,
+        "final_displacement": 84.0692,
+        "oscillation_score": 0.0859,
+        "max_acceleration": 0.33,
+        "max_deceleration": 0.4032,
+        "max_jerk": 0.6665,
+        "turning_direction_changes": 0.7895,
+        "lateral_accel_max": 0.282,
+        "path_efficiency": 0.9957,
+        "speed_at_end": 0.855,
+        "mean_curvature": 0.1095
+      },
+      "class_probs": [
+        0.38666666666666666,
+        0.01,
+        0.023333333333333334,
+        0.42,
+        0.16
+      ],
+      "report": {
+        "event_type": "High-Speed Risk",
+        "severity": "High",
+        "primary_indicator": "max_speed > 1.5 m/s",
+        "secondary_indicators": [
+          "max_heading_change > 0.8 rad",
+          "max_lateral_deviation > 0.5 m"
+        ],
+        "recommended_action": "Reduce speed to 1.5 m/s or less",
+        "confidence": "High"
+      }
+    },
+    {
+      "sample": 2,
+      "predicted_event": "Oscillatory Motion",
+      "gt_event": "Safe",
+      "features": {
+        "max_speed": 0.9814,
+        "mean_speed": 0.7192,
+        "max_heading_change": 6.2338,
+        "mean_heading_change": 1.5164,
+        "heading_variance": 6.5392,
+        "max_lateral_dev": 0.4896,
+        "mean_lateral_dev": 0.2776,
+        "total_distance": 42.4353,
+        "final_displacement": 42.2606,
+        "oscillation_score": 2.6348,
+        "max_acceleration": 0.2013,
+        "max_deceleration": 0.1949,
+        "max_jerk": 0.3559,
+        "turning_direction_changes": 0.5789,
+        "lateral_accel_max": 0.1419,
+        "path_efficiency": 0.9959,
+        "speed_at_end": 0.2036,
+        "mean_curvature": 2.5978
+      },
+      "class_probs": [
+        0.0,
+        0.006666666666666667,
+        0.9933333333333333,
+        0.0,
+        0.0
+      ],
+      "report": {
+        "event_type": "Oscillatory Motion",
+        "severity": "Low",
+        "primary_indicator": "Mean speed is 0.7192 m/s, which is below the threshold for High Speed Risk",
+        "secondary_indicators": [
+          "Mean speed is 0.7192 m/s",
+          "Oscillation score is 2.6348"
+        ],
+        "recommended_action": "Continue to monitor the vehicle's speed and trajectory",
+        "confidence": "High"
+      }
+    },
+    {
+      "sample": 3,
+      "predicted_event": "Oscillatory Motion",
+      "gt_event": "Oscillatory Motion",
+      "features": {
+        "max_speed": 0.8937,
+        "mean_speed": 0.503,
+        "max_heading_change": 6.0577,
+        "mean_heading_change": 1.2014,
+        "heading_variance": 4.1685,
+        "max_lateral_dev": 4.5434,
+        "mean_lateral_dev": 2.4422,
+        "total_distance": 29.6783,
+        "final_displacement": 27.0171,
+        "oscillation_score": 2.1684,
+        "max_acceleration": 0.2487,
+        "max_deceleration": 0.378,
+        "max_jerk": 0.6267,
+        "turning_direction_changes": 0.7544,
+        "lateral_accel_max": 0.509,
+        "path_efficiency": 0.9103,
+        "speed_at_end": 0.6856,
+        "mean_curvature": 3.4305
+      },
+      "class_probs": [
+        0.0,
+        0.0033333333333333335,
+        0.99,
+        0.006666666666666667,
+        0.0
+      ],
+      "report": {
+        "event_type": "Oscillatory Motion",
+        "severity": "High",
+        "primary_indicator": "max_heading_change > 1.2",
+        "secondary_indicators": [
+          "max_heading_change = 6.0577 rad",
+          "max_lateral_dev = 4.5434 m"
+        ],
+        "recommended_action": "Adjust trajectory to reduce oscillations and heading changes",
+        "confidence": "High"
+      }
+    },
+    {
+      "sample": 4,
+      "predicted_event": "Safe",
+      "gt_event": "Safe",
+      "features": {
+        "max_speed": 0.957,
+        "mean_speed": 0.7551,
+        "max_heading_change": 0.6239,
+        "mean_heading_change": 0.1447,
+        "heading_variance": 0.019,
+        "max_lateral_dev": 0.463,
+        "mean_lateral_dev": 0.2267,
+        "total_distance": 44.5525,
+        "final_displacement": 44.307,
+        "oscillation_score": 0.1014,
+        "max_acceleration": 0.279,
+        "max_deceleration": 0.4075,
+        "max_jerk": 0.6322,
+        "turning_direction_changes": 0.7368,
+        "lateral_accel_max": 0.1949,
+        "path_efficiency": 0.9945,
+        "speed_at_end": 0.5163,
+        "mean_curvature": 0.2165
+      },
+      "class_probs": [
+        0.9533333333333334,
+        0.03333333333333333,
+        0.013333333333333334,
+        0.0,
+        0.0
+      ],
+      "report": {
+        "event_type": "Safe",
+        "severity": "None",
+        "primary_indicator": "Predicted trajectory shows no safety-critical motion pattern.",
+        "secondary_indicators": [],
+        "recommended_action": "No intervention required. Continue monitoring.",
+        "confidence": "High"
+      }
+    }
+  ]
+}
